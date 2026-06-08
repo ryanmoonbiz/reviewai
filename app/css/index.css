@@ -44,6 +44,8 @@ p,
 .intro-copy,
 .section-heading,
 .card,
+.field-group,
+.preview-panel,
 .signal-list,
 .metric-card {
   word-break: keep-all;
@@ -189,6 +191,25 @@ a {
   color: var(--primary);
 }
 
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn-primary:disabled:hover {
+  background: var(--primary);
+}
+
+.btn-kakao {
+  background: var(--kakao-yellow);
+  color: var(--text-primary);
+}
+
+.btn-kakao:hover {
+  background: color-mix(in srgb, var(--kakao-yellow) 88%, var(--warning));
+}
+
 .signal-panel,
 .card,
 .metric-card {
@@ -270,6 +291,12 @@ a {
   margin-bottom: 20px;
 }
 
+.section-heading p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
 .section-heading h2 {
   font: var(--font-h2);
 }
@@ -302,6 +329,200 @@ a {
 }
 
 .card p {
+  color: var(--text-secondary);
+}
+
+.input-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.review-form,
+.preview-panel {
+  padding: 20px;
+}
+
+.review-form {
+  display: grid;
+  gap: 16px;
+}
+
+.field-group {
+  display: grid;
+  gap: 8px;
+}
+
+.field-group span {
+  color: var(--text-primary);
+  font: 700 14px/1.5 var(--font-family);
+}
+
+.field-group input,
+.field-group textarea {
+  display: block;
+  inline-size: -webkit-fill-available;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font: var(--font-body);
+}
+
+.field-group textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+.field-group input:focus,
+.field-group textarea:focus {
+  border-color: var(--primary);
+  outline: 3px solid color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+.dropzone {
+  position: relative;
+  display: grid;
+  min-height: 160px;
+  padding: 20px;
+  border: 1px dashed color-mix(in srgb, var(--primary) 40%, var(--border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--primary) 5%, var(--card-bg));
+}
+
+.dropzone.is-dragging {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--card-bg));
+}
+
+.dropzone input {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.dropzone-copy {
+  display: grid;
+  gap: 6px;
+  place-items: center;
+  text-align: center;
+}
+
+.dropzone-copy strong {
+  color: var(--text-primary);
+  font: var(--font-h2);
+}
+
+.dropzone-copy span,
+.dropzone-copy small,
+.form-message,
+.preview-list {
+  color: var(--text-secondary);
+}
+
+.dropzone-copy small {
+  max-width: 520px;
+  font: var(--font-caption);
+}
+
+.form-message {
+  min-height: 24px;
+  margin: 0;
+}
+
+.form-message.is-success {
+  color: var(--success);
+}
+
+.form-message.is-warning {
+  color: var(--warning);
+}
+
+.form-message.is-danger {
+  color: var(--danger);
+}
+
+.form-actions {
+  margin-top: 0;
+}
+
+.preview-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.preview-header strong {
+  font: var(--font-h2);
+}
+
+.preview-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.preview-list li {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--background);
+}
+
+.preview-list strong {
+  color: var(--text-primary);
+}
+
+.preview-list span {
+  color: var(--text-secondary);
+  font: var(--font-caption);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.limit-modal {
+  display: grid;
+  gap: 16px;
+  width: min(calc(100vw - 40px), 520px);
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+}
+
+.limit-modal h2,
+.limit-modal p {
+  margin: 0;
+}
+
+.limit-modal p {
   color: var(--text-secondary);
 }
 
@@ -395,6 +616,7 @@ a {
 
   .intro-grid,
   .card-grid,
+  .input-layout,
   .metric-row {
     grid-template-columns: 1fr;
   }
