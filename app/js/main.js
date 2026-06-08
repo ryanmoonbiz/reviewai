@@ -2,6 +2,7 @@
   var STORAGE_KEY = "reviewai:ux02-input";
   var REVIEW_LIMIT = 100;
   var MAX_FILE_SIZE = 2 * 1024 * 1024;
+  var REPORT_DELAY = 700;
   var yearNode = document.getElementById("current-year");
   var form = document.getElementById("review-form");
   var storeNameInput = document.getElementById("store-name");
@@ -16,6 +17,25 @@
   var reviewCountBadge = document.getElementById("review-count-badge");
   var limitModal = document.getElementById("limit-modal");
   var limitModalClose = document.getElementById("limit-modal-close");
+  var sampleReportLink = document.getElementById("sample-report-link");
+  var loadingView = document.getElementById("loading-view");
+  var reportView = document.getElementById("report-view");
+  var reportBackButton = document.getElementById("report-back");
+  var reportStoreName = document.getElementById("report-store-name");
+  var reportSummaryCopy = document.getElementById("report-summary-copy");
+  var reportAverageRating = document.getElementById("report-average-rating");
+  var reportTotalCount = document.getElementById("report-total-count");
+  var reportCheckCount = document.getElementById("report-check-count");
+  var reportRatingDelta = document.getElementById("report-rating-delta");
+  var positiveKeywordList = document.getElementById("positive-keyword-list");
+  var checkKeywordList = document.getElementById("check-keyword-list");
+  var priorityReviewList = document.getElementById("priority-review-list");
+  var replyTabs = document.getElementById("reply-tabs");
+  var replyDraftText = document.getElementById("reply-draft-text");
+  var replyCopyButton = document.getElementById("reply-copy");
+  var replyCopyMessage = document.getElementById("reply-copy-message");
+  var improvementList = document.getElementById("improvement-list");
+  var activeDraftId = "brand";
   var currentReviews = [];
 
   if (yearNode) {
@@ -26,7 +46,6 @@
     return;
   }
 
-  sessionStorage.removeItem(STORAGE_KEY);
   renderState([], "idle", "리뷰 데이터를 입력하면 분석 시작 버튼이 활성화됩니다.");
 
   reviewTextInput.addEventListener("input", function () {
@@ -80,6 +99,7 @@
     persistReviews(currentReviews, "ready");
 
     renderState(currentReviews, "success", "입력 데이터가 임시 저장되었습니다.");
+    showLoadingThenReport();
   });
 
   limitModalClose.addEventListener("click", function () {
@@ -91,6 +111,26 @@
       closeLimitModal();
     }
   });
+
+  if (sampleReportLink) {
+    sampleReportLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      ensureSampleInput();
+      showLoadingThenReport();
+    });
+  }
+
+  if (reportBackButton) {
+    reportBackButton.addEventListener("click", function () {
+      showInputView();
+    });
+  }
+
+  if (replyCopyButton) {
+    replyCopyButton.addEventListener("click", function () {
+      copyActiveDraft();
+    });
+  }
 
   function handleFile(file) {
     if (!file) {
@@ -242,5 +282,224 @@
 
   function closeLimitModal() {
     limitModal.hidden = true;
+  }
+
+  function showLoadingThenReport() {
+    if (!loadingView || !reportView) {
+      return;
+    }
+
+    loadingView.hidden = false;
+    reportView.hidden = true;
+    loadingView.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    window.setTimeout(function () {
+      renderReport();
+      loadingView.hidden = true;
+      reportView.hidden = false;
+      reportView.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#report-view");
+    }, REPORT_DELAY);
+  }
+
+  function showInputView() {
+    if (reportView) {
+      reportView.hidden = true;
+    }
+    if (loadingView) {
+      loadingView.hidden = true;
+    }
+    document.getElementById("analysis").scrollIntoView({ behavior: "smooth", block: "start" });
+    history.replaceState(null, "", "#analysis");
+  }
+
+  function getReportInput() {
+    var storedValue = sessionStorage.getItem(STORAGE_KEY);
+
+    if (storedValue) {
+      try {
+        return JSON.parse(storedValue);
+      } catch (error) {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
+    return buildSampleInput();
+  }
+
+  function buildSampleInput() {
+    var sampleReviews = (window.reviewaiMockData.priorityReviews || []).map(function (review, index) {
+      return {
+        id: index + 1,
+        rating: String(review.rating),
+        text: review.text
+      };
+    });
+
+    return {
+      status: "sample",
+      storeName: "리뷰와이 샘플 스토어",
+      reviewCount: window.reviewaiMockData.reviewSummary.totalCount,
+      reviews: sampleReviews
+    };
+  }
+
+  function ensureSampleInput() {
+    var sampleInput = buildSampleInput();
+    storeNameInput.value = sampleInput.storeName;
+    reviewTextInput.value = sampleInput.reviews.map(function (review) {
+      return review.text;
+    }).join("\n");
+    currentReviews = sampleInput.reviews;
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(sampleInput));
+    renderState(currentReviews, "success", "샘플 리뷰를 불러왔습니다.");
+  }
+
+  function renderReport() {
+    var input = getReportInput();
+    var mockData = window.reviewaiMockData || {};
+    var summary = mockData.reviewSummary || {};
+    var reviews = Array.isArray(input.reviews) ? input.reviews : [];
+    var totalCount = input.reviewCount || reviews.length || summary.totalCount || 0;
+    var lowRatingCount = countLowRatingReviews(reviews) || summary.lowRatingCount || 0;
+
+    reportStoreName.textContent = (input.storeName || "리뷰 리포트") + " 리뷰 리포트";
+    reportSummaryCopy.textContent = totalCount + "건의 입력 리뷰를 기준으로 반복 키워드, 우선 검토 리뷰, 답글 초안을 정리했습니다.";
+    reportAverageRating.textContent = String(summary.averageRating || "4.6");
+    reportTotalCount.textContent = String(totalCount);
+    reportCheckCount.textContent = String(lowRatingCount || summary.checkItems || 0);
+    reportRatingDelta.textContent = String(summary.ratingDelta || "-");
+
+    renderKeywordBars(positiveKeywordList, mockData.positiveKeywords || [], false);
+    renderKeywordBars(checkKeywordList, mockData.checkKeywords || [], true);
+    renderPriorityReviews(reviews, mockData.priorityReviews || []);
+    renderReplyTabs(mockData.replyDrafts || []);
+    renderImprovements(mockData.improvementCards || []);
+  }
+
+  function countLowRatingReviews(reviews) {
+    return reviews.filter(function (review) {
+      var rating = Number(review.rating);
+      return rating > 0 && rating <= 2;
+    }).length;
+  }
+
+  function renderKeywordBars(container, keywords, isWarning) {
+    container.innerHTML = "";
+
+    keywords.forEach(function (keyword) {
+      var item = document.createElement("div");
+      var header = document.createElement("div");
+      var label = document.createElement("strong");
+      var value = document.createElement("span");
+      var track = document.createElement("div");
+      var fill = document.createElement("span");
+
+      item.className = "keyword-bar";
+      header.className = "keyword-bar-header";
+      track.className = "keyword-track";
+      fill.className = isWarning ? "keyword-fill is-warning" : "keyword-fill";
+      fill.style.width = Math.min(Number(keyword.value) || 0, 99) + "%";
+      label.textContent = keyword.label;
+      value.textContent = keyword.value + "점";
+
+      header.appendChild(label);
+      header.appendChild(value);
+      track.appendChild(fill);
+      item.appendChild(header);
+      item.appendChild(track);
+      container.appendChild(item);
+    });
+  }
+
+  function renderPriorityReviews(inputReviews, fallbackReviews) {
+    var lowRatingReviews = inputReviews.filter(function (review) {
+      var rating = Number(review.rating);
+      return rating > 0 && rating <= 2;
+    });
+    var reviews = lowRatingReviews.length ? lowRatingReviews.slice(0, 3) : fallbackReviews.slice(0, 3);
+
+    priorityReviewList.innerHTML = "";
+    reviews.forEach(function (review) {
+      var item = document.createElement("article");
+      var rating = document.createElement("strong");
+      var body = document.createElement("div");
+      var text = document.createElement("p");
+      var reason = document.createElement("span");
+
+      item.className = "priority-item";
+      rating.className = "priority-rating";
+      rating.textContent = (review.rating || "-") + "점";
+      text.textContent = review.text;
+      reason.textContent = review.reason || "낮은 별점 리뷰";
+      body.appendChild(text);
+      body.appendChild(reason);
+      item.appendChild(rating);
+      item.appendChild(body);
+      priorityReviewList.appendChild(item);
+    });
+  }
+
+  function renderReplyTabs(drafts) {
+    if (!drafts.length) {
+      return;
+    }
+
+    replyTabs.innerHTML = "";
+    drafts.forEach(function (draft) {
+      var tab = document.createElement("button");
+      tab.className = draft.id === activeDraftId ? "reply-tab is-active" : "reply-tab";
+      tab.type = "button";
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", draft.id === activeDraftId ? "true" : "false");
+      tab.textContent = draft.label;
+      tab.addEventListener("click", function () {
+        activeDraftId = draft.id;
+        renderReplyTabs(drafts);
+      });
+      replyTabs.appendChild(tab);
+    });
+
+    var activeDraft = drafts.find(function (draft) {
+      return draft.id === activeDraftId;
+    }) || drafts[0];
+    replyDraftText.textContent = activeDraft.text;
+    replyCopyMessage.textContent = "";
+  }
+
+  function renderImprovements(cards) {
+    improvementList.innerHTML = "";
+
+    cards.forEach(function (card) {
+      var item = document.createElement("article");
+      var title = document.createElement("h3");
+      var body = document.createElement("p");
+
+      item.className = "card improvement-card";
+      title.textContent = card.title;
+      body.textContent = card.body;
+      item.appendChild(title);
+      item.appendChild(body);
+      improvementList.appendChild(item);
+    });
+  }
+
+  function copyActiveDraft() {
+    var text = replyDraftText.textContent.trim();
+
+    if (!text) {
+      return;
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        replyCopyMessage.textContent = "초안이 클립보드에 복사되었습니다.";
+      }).catch(function () {
+        replyCopyMessage.textContent = "복사 버튼을 다시 눌러 주세요.";
+      });
+      return;
+    }
+
+    replyCopyMessage.textContent = "브라우저에서 클립보드 권한을 확인해 주세요.";
   }
 })();
