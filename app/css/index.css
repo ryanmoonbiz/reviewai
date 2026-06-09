@@ -885,6 +885,10 @@ a {
   font: var(--font-caption);
 }
 
+.print-meta {
+  display: none;
+}
+
 @media (max-width: 840px) {
   .header-inner,
   .footer-inner,
@@ -1130,5 +1134,141 @@ a {
   .site-nav a,
   .reply-tab {
     font-size: 12px;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    min-width: 0;
+    background: #FFFFFF;
+    color: #111827;
+    font-size: 10.5pt;
+    line-height: 1.45;
+  }
+
+  .site-header,
+  .site-footer,
+  .intro-section,
+  #analysis,
+  #sample-report,
+  .loading-view,
+  .modal-backdrop,
+  #report-back,
+  .reply-tabs,
+  #reply-copy,
+  #reply-copy-message,
+  .priority-toggle,
+  .report-cta-banner {
+    display: none !important;
+  }
+
+  .section,
+  .report-view {
+    padding: 0;
+    background: #FFFFFF;
+  }
+
+  .container,
+  .report-shell {
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  .report-shell {
+    gap: 12pt;
+  }
+
+  .report-hero {
+    display: block;
+    padding-bottom: 8pt;
+    border-bottom: 1px solid #CBD5E1;
+  }
+
+  .report-hero h2 {
+    font-size: 18pt;
+    line-height: 1.3;
+  }
+
+  .report-hero p {
+    color: #374151;
+  }
+
+  .print-meta {
+    display: block;
+    margin-top: 6pt;
+    color: #4B5563;
+    font-size: 9pt;
+  }
+
+  .report-metrics,
+  .report-grid,
+  .improvement-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8pt;
+  }
+
+  .card,
+  .metric-card,
+  .report-card,
+  .reply-draft-box,
+  .priority-item,
+  .improvement-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    min-height: auto;
+    padding: 10pt;
+    border: 1px solid #CBD5E1;
+    border-radius: 0;
+    background: #FFFFFF;
+    box-shadow: none;
+  }
+
+  .metric-card strong {
+    font-size: 18pt;
+  }
+
+  .keyword-track,
+  .bar {
+    background: #E5E7EB;
+  }
+
+  .keyword-fill,
+  .keyword-fill.is-warning,
+  .bar-primary,
+  .bar-success,
+  .bar-warning {
+    background: #111827;
+  }
+
+  .badge,
+  .priority-rating {
+    border: 1px solid #CBD5E1;
+    background: #FFFFFF;
+    color: #111827;
+  }
+
+  .priority-copy.is-clamped {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: initial;
+  }
+
+  .reply-draft-box {
+    margin-top: 4pt;
+  }
+
+  a {
+    color: #111827;
   }
 }
