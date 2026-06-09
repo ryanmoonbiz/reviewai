@@ -841,6 +841,39 @@ a {
   color: var(--text-secondary);
 }
 
+.report-cta-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--warning) 28%, var(--border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--warning) 6%, var(--card-bg));
+}
+
+.report-cta-banner h3,
+.report-cta-banner p {
+  margin: 0;
+}
+
+.report-cta-banner h3 {
+  margin-top: 10px;
+  font: var(--font-h2);
+}
+
+.report-cta-banner p {
+  max-width: 680px;
+  margin-top: 8px;
+  color: var(--text-secondary);
+}
+
+.report-cta-banner .btn {
+  flex: 0 0 auto;
+  min-height: 52px;
+}
+
 .site-footer {
   padding: 24px 0;
   background: var(--card-bg);
@@ -1060,6 +1093,17 @@ a {
 
   .improvement-card {
     min-height: 148px;
+  }
+
+  .report-cta-banner {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .report-cta-banner .btn {
+    inline-size: -webkit-fill-available;
   }
 
   .limit-modal,

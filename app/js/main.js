@@ -426,7 +426,7 @@
       var body = document.createElement("div");
       var text = document.createElement("p");
       var reason = document.createElement("span");
-      var shouldClamp = String(review.text || "").length > 32;
+      var shouldClamp = String(review.text || "").length > 80;
 
       item.className = "priority-item";
       rating.className = "priority-rating";
