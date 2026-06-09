@@ -37,6 +37,9 @@
   var improvementList = document.getElementById("improvement-list");
   var activeDraftId = "brand";
   var currentReviews = [];
+  var leadmagnetSubmitBtn = document.getElementById("leadmagnet-submit-btn");
+  var successModal = document.getElementById("success-modal");
+  var successModalClose = document.getElementById("success-modal-close");
 
   if (yearNode) {
     yearNode.textContent = String(new Date().getFullYear());
@@ -129,6 +132,77 @@
   if (replyCopyButton) {
     replyCopyButton.addEventListener("click", function () {
       copyActiveDraft();
+    });
+  }
+
+  if (leadmagnetSubmitBtn) {
+    leadmagnetSubmitBtn.addEventListener("click", function () {
+      var selected = [];
+      var checkboxes = document.querySelectorAll(".leadmagnet-checkbox");
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+          selected.push(checkboxes[i].value);
+        }
+      }
+      console.log("[CTR 트래킹] 리드마그넷 수령 CTA 클릭: 선택된 항목 = " + selected.join(", "));
+      if (successModal) {
+        successModal.hidden = false;
+      }
+    });
+  }
+
+  var leadmagnetContainer = document.querySelector(".leadmagnet-cards-container");
+  if (leadmagnetContainer) {
+    leadmagnetContainer.addEventListener("change", function (event) {
+      if (event.target && event.target.classList.contains("leadmagnet-checkbox")) {
+        var card = event.target.closest(".leadmagnet-card");
+        if (card) {
+          if (event.target.checked) {
+            card.classList.add("is-checked");
+          } else {
+            card.classList.remove("is-checked");
+          }
+        }
+        updateLeadmagnetButtonState();
+      }
+    });
+  }
+
+  function updateLeadmagnetButtonState() {
+    if (!leadmagnetSubmitBtn) return;
+    var checkboxes = document.querySelectorAll(".leadmagnet-checkbox");
+    var hasChecked = false;
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        hasChecked = true;
+        break;
+      }
+    }
+    leadmagnetSubmitBtn.disabled = !hasChecked;
+
+    var hintText = document.querySelector(".leadmagnet-hint-text");
+    if (hintText) {
+      if (hasChecked) {
+        hintText.classList.add("is-hidden");
+      } else {
+        hintText.classList.remove("is-hidden");
+      }
+    }
+  }
+
+  if (successModalClose) {
+    successModalClose.addEventListener("click", function () {
+      if (successModal) {
+        successModal.hidden = true;
+      }
+    });
+  }
+
+  if (successModal) {
+    successModal.addEventListener("click", function (event) {
+      if (event.target === successModal) {
+        successModal.hidden = true;
+      }
     });
   }
 
