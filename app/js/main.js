@@ -179,6 +179,15 @@
       }
     }
     leadmagnetSubmitBtn.disabled = !hasChecked;
+
+    var hintText = document.querySelector(".leadmagnet-hint-text");
+    if (hintText) {
+      if (hasChecked) {
+        hintText.classList.add("is-hidden");
+      } else {
+        hintText.classList.remove("is-hidden");
+      }
+    }
   }
 
   if (successModalClose) {

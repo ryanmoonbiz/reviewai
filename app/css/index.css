@@ -880,6 +880,32 @@ a {
   min-height: 52px;
 }
 
+/* Leadmagnet Submit Section */
+.leadmagnet-submit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.leadmagnet-hint-text {
+  margin: 0;
+  font-size: 13.5px;
+  letter-spacing: -0.01em;
+  color: var(--warning);
+  text-align: right;
+  font-weight: 500;
+  transition: opacity 0.2s, visibility 0.2s;
+  opacity: 1;
+  visibility: visible;
+}
+
+.leadmagnet-hint-text.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
 /* Leadmagnet Cards Styling */
 .leadmagnet-cards-container {
   display: grid;
@@ -1168,6 +1194,15 @@ a {
     flex-direction: column;
     gap: 14px;
     padding: 16px;
+  }
+
+  .leadmagnet-submit-container {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .leadmagnet-hint-text {
+    text-align: center;
   }
 
   .report-cta-banner .btn {
