@@ -845,12 +845,18 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  margin-top: 16px;
-  padding: 20px;
-  border: 1px solid color-mix(in srgb, var(--warning) 28%, var(--border));
+  gap: 24px;
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
   border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--warning) 6%, var(--card-bg));
+  background: color-mix(in srgb, var(--primary) 4%, var(--card-bg));
+}
+
+.cta-banner-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .report-cta-banner h3,
@@ -872,6 +878,64 @@ a {
 .report-cta-banner .btn {
   flex: 0 0 auto;
   min-height: 52px;
+}
+
+/* Leadmagnet Cards Styling */
+.leadmagnet-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.leadmagnet-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.leadmagnet-card:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 2%, var(--card-bg));
+  box-shadow: 0 2px 6px rgba(29, 78, 216, 0.06);
+}
+
+.leadmagnet-checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.leadmagnet-card.is-checked {
+  border-color: var(--primary);
+  border-width: 1.5px;
+  background: color-mix(in srgb, var(--primary) 4%, var(--card-bg));
+}
+
+.leadmagnet-card .card-content {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* Success Modal Styling */
+.success-modal {
+  text-align: center;
+}
+
+.success-modal .button-row {
+  justify-content: center;
 }
 
 .site-footer {
@@ -1108,6 +1172,11 @@ a {
 
   .report-cta-banner .btn {
     inline-size: -webkit-fill-available;
+  }
+
+  .leadmagnet-cards-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .limit-modal,
