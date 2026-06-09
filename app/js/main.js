@@ -426,13 +426,31 @@
       var body = document.createElement("div");
       var text = document.createElement("p");
       var reason = document.createElement("span");
+      var shouldClamp = String(review.text || "").length > 80;
 
       item.className = "priority-item";
       rating.className = "priority-rating";
       rating.textContent = (review.rating || "-") + "점";
+      text.className = shouldClamp ? "priority-copy is-clamped" : "priority-copy";
       text.textContent = review.text;
       reason.textContent = review.reason || "낮은 별점 리뷰";
       body.appendChild(text);
+
+      if (shouldClamp) {
+        var toggle = document.createElement("button");
+        toggle.className = "priority-toggle";
+        toggle.type = "button";
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.textContent = "자세히 보기";
+        toggle.addEventListener("click", function () {
+          var isExpanded = toggle.getAttribute("aria-expanded") === "true";
+          toggle.setAttribute("aria-expanded", String(!isExpanded));
+          text.classList.toggle("is-clamped", isExpanded);
+          toggle.textContent = isExpanded ? "자세히 보기" : "접기";
+        });
+        body.appendChild(toggle);
+      }
+
       body.appendChild(reason);
       item.appendChild(rating);
       item.appendChild(body);
